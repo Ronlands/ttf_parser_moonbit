@@ -1,0 +1,22 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "ronlands/ttf_parser_moonbit/test_data"
+
+// Values
+let colr1_ttf_data : Array[Int]
+
+let colr1_var_ttf_data : Array[Int]
+
+let demo_ttf_data : Array[Int]
+
+fn get_all_test_fonts() -> Array[(String, Array[Int])]
+
+fn get_font_description(String) -> String
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits
+

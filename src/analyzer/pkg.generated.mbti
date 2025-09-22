@@ -1,0 +1,23 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "ronlands/ttf_parser_moonbit/analyzer"
+
+import(
+  "ronlands/ttf_parser_moonbit/reader"
+  "ronlands/ttf_parser_moonbit/type"
+)
+
+// Values
+fn analyze_font_features(@type.TableDirectory) -> @type.FontFeatures
+
+fn[R : @reader.ByteReader] extract_font_info(R, @type.TableDirectory) -> @type.ParseResult[@type.FontInfo]
+
+fn is_core_table_check(String) -> Bool
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits
+

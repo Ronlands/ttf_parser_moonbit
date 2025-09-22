@@ -1,0 +1,111 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "ronlands/ttf_parser_moonbit/type"
+
+// Values
+fn[T] make_error(String) -> ParseResult[T]
+
+fn make_font_features(Bool, Bool, Bool, Int, Array[String]) -> FontFeatures
+
+fn make_font_header(Int, Int, Int, Int, Int) -> FontHeader
+
+fn make_font_info(String, String, String, String, Int, Int, Int, Int, Int) -> FontInfo
+
+fn make_head_table(Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int) -> HeadTable
+
+fn make_maxp_table(Int, Int, Int, Int, Int, Int) -> MaxpTable
+
+fn[T] make_success(T) -> ParseResult[T]
+
+fn make_table_directory(FontHeader, Array[TableDirectoryEntry]) -> TableDirectory
+
+fn make_table_entry(String, Int, Int, Int) -> TableDirectoryEntry
+
+// Errors
+
+// Types and methods
+pub struct FontFeatures {
+  has_color : Bool
+  has_variable : Bool
+  has_opentype_features : Bool
+  table_count : Int
+  supported_tables : Array[String]
+}
+impl Show for FontFeatures
+
+pub struct FontHeader {
+  version : Int
+  num_tables : Int
+  search_range : Int
+  entry_selector : Int
+  range_shift : Int
+}
+impl Show for FontHeader
+
+pub struct FontInfo {
+  name : String
+  family : String
+  style : String
+  version : String
+  num_glyphs : Int
+  units_per_em : Int
+  ascender : Int
+  descender : Int
+  line_gap : Int
+}
+impl Show for FontInfo
+
+pub struct HeadTable {
+  version : Int
+  font_revision : Int
+  checksum_adjustment : Int
+  magic_number : Int
+  flags : Int
+  units_per_em : Int
+  created : Int
+  modified : Int
+  x_min : Int
+  y_min : Int
+  x_max : Int
+  y_max : Int
+  mac_style : Int
+  lowest_rec_ppem : Int
+  font_direction_hint : Int
+  index_to_loc_format : Int
+  glyph_data_format : Int
+}
+impl Show for HeadTable
+
+pub struct MaxpTable {
+  version : Int
+  num_glyphs : Int
+  max_points : Int
+  max_contours : Int
+  max_composite_points : Int
+  max_composite_contours : Int
+}
+impl Show for MaxpTable
+
+pub enum ParseResult[T] {
+  Success(T)
+  Error(String)
+}
+impl[T : Show] Show for ParseResult[T]
+
+pub struct TableDirectory {
+  header : FontHeader
+  entries : Array[TableDirectoryEntry]
+}
+impl Show for TableDirectory
+
+pub struct TableDirectoryEntry {
+  tag : String
+  checksum : Int
+  offset : Int
+  length : Int
+}
+impl Show for TableDirectoryEntry
+
+// Type aliases
+
+// Traits
+

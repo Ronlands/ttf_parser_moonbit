@@ -1,0 +1,40 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "ronlands/ttf_parser_moonbit/api"
+
+import(
+  "ronlands/ttf_parser_moonbit/type"
+)
+
+// Values
+fn analyze_font_features_from_bytes(Array[Int]) -> @type.ParseResult[@type.FontFeatures]
+
+fn get_all_test_fonts() -> Array[(String, Array[Int])]
+
+fn get_font_description(String) -> String
+
+fn get_font_format(Array[Int]) -> String
+
+fn get_font_header(Array[Int]) -> @type.ParseResult[@type.FontHeader]
+
+fn get_font_usage_recommendation(Array[Int]) -> String
+
+fn get_table_directory(Array[Int]) -> @type.ParseResult[@type.TableDirectory]
+
+fn is_color_font(Array[Int]) -> Bool
+
+fn is_core_table_check(String) -> Bool
+
+fn is_valid_ttf(Array[Int]) -> Bool
+
+fn is_variable_font(Array[Int]) -> Bool
+
+fn parse_ttf_from_bytes(Array[Int]) -> @type.ParseResult[@type.FontInfo]
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits
+

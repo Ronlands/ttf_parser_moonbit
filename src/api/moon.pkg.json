@@ -1,0 +1,41 @@
+{
+  "import": [
+    {
+      "path": "ronlands/ttf_parser_moonbit/type",
+      "alias": "types"
+    },
+    {
+      "path": "ronlands/ttf_parser_moonbit/reader",
+      "alias": "reader"
+    },
+    {
+      "path": "ronlands/ttf_parser_moonbit/parser",
+      "alias": "parser"
+    },
+    {
+      "path": "ronlands/ttf_parser_moonbit/analyzer",
+      "alias": "analyzer"
+    },
+    {
+      "path": "ronlands/ttf_parser_moonbit/test_data",
+      "alias": "test_data"
+    }
+  ],
+  "link": {
+    "wasm": {
+      "exports": [
+        "parse_ttf_from_bytes",
+        "get_table_directory", 
+        "get_font_header",
+        "analyze_font_features_from_bytes",
+        "is_color_font",
+        "is_variable_font", 
+        "is_valid_ttf",
+        "get_font_format",
+        "get_font_usage_recommendation",
+        "get_all_test_fonts",
+        "get_font_description"
+      ]
+    }
+  }
+}

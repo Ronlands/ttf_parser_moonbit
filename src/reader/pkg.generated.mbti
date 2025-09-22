@@ -1,0 +1,33 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "ronlands/ttf_parser_moonbit/reader"
+
+// Values
+fn bytes_to_tag_string(Int, Int, Int, Int) -> String
+
+fn[R : ByteReader] read_tag(R) -> String?
+
+fn[R : ByteReader] read_u16_be(R) -> Int?
+
+fn[R : ByteReader] read_u32_be(R) -> Int?
+
+// Errors
+
+// Types and methods
+pub struct ArrayByteReader {
+  data : Array[Int]
+  mut pos : Int
+}
+fn ArrayByteReader::new(Array[Int]) -> Self
+impl Show for ArrayByteReader
+impl ByteReader for ArrayByteReader
+
+// Type aliases
+
+// Traits
+pub trait ByteReader {
+  read_byte(Self) -> Int?
+  position(Self) -> Int
+  seek(Self, Int) -> Unit
+  length(Self) -> Int
+}
+
