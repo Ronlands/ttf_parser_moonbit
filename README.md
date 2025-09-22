@@ -1,87 +1,129 @@
-# TTF 字体解析器 - MoonBit 实现
+# TTF Font Parser - MoonBit Implementation
 
-一个用 MoonBit 语言编写的 TrueType 字体文件解析器，支持解析 TTF 文件的基本结构和关键数据。
+A TrueType font file parser written in MoonBit language that supports parsing TTF file structures and key data. Features modular architecture design with integrated file system support.
 
-## 功能特性
-
-- ✅ 解析 TTF 文件头信息
-- ✅ 解析字体表目录
-- ✅ 提取字体基本信息
-- ✅ 支持常见字体表类型 (cmap, glyf, head, maxp, name)
-- ✅ 完善的错误处理
-- ✅ 全面的测试覆盖
-
-## 项目结构
+## Project Structure
 
 ```
 ttf_parser_moonbit/
-├── ttf_parser_moonbit.mbt    # 主库文件
-├── cmd/main/main.mbt         # 演示程序
-├── fonts/                    # 测试字体文件
-├── moon.mod.json            # 项目配置
-└── README.md                # 项目文档
+├── src/
+│   ├── cmd/                  # Main program entry
+│   │   ├── main.mbt         # Demo program
+│   │   └── moon.pkg.json    # Package configuration
+│   ├── api/                 # Unified API interface
+│   ├── type/                # Data type definitions
+│   ├── reader/              # Binary data reading
+│   ├── parser/              # Table parser
+│   ├── analyzer/            # Font feature analysis
+│   ├── test_data/           # Test data
+│   └── fonts/               # Test font files
+├── moon.mod.json            # Project configuration
+└── README.md                # Project documentation
 ```
 
-## 核心数据结构
+## Core Data Structures
 
 ### FontHeader
-字体文件头，包含版本号、表数量等基本信息。
+Font file header containing basic information like version number and table count.
 
 ```moonbit
 pub struct FontHeader {
-  version : Int          // 字体版本号
-  num_tables : Int      // 字体表数量
-  search_range : Int    // 搜索范围
-  entry_selector : Int  // 入口选择器
-  range_shift : Int     // 范围移位
+  version : Int          // Font version number
+  num_tables : Int      // Number of font tables
+  search_range : Int    // Search range
+  entry_selector : Int  // Entry selector
+  range_shift : Int     // Range shift
 }
 ```
 
 ### TableDirectoryEntry
-字体表目录项，描述每个表的位置和大小。
+Font table directory entry describing the position and size of each table.
 
 ```moonbit
 pub struct TableDirectoryEntry {
-  tag : String      // 表标签 (4字节标识符)
-  checksum : Int    // 校验和
-  offset : Int      // 表在文件中的偏移量
-  length : Int      // 表的长度
+  tag : String      // Table tag (4-byte identifier)
+  checksum : Int    // Checksum
+  offset : Int      // Table offset in file
+  length : Int      // Table length
 }
 ```
 
 ### FontInfo
-字体基本信息，包含名称、字符数量等。
+Basic font information including name, character count, etc.
 
 ```moonbit
 pub struct FontInfo {
-  name : String        // 字体名称
-  family : String      // 字体族名称
-  style : String       // 字体样式
-  version : String     // 字体版本
-  num_glyphs : Int     // 字符数量
-  units_per_em : Int   // 单位每EM
+  name : String        // Font name
+  family : String      // Font family name
+  style : String       // Font style
+  version : String     // Font version
+  num_glyphs : Int     // Number of characters
+  units_per_em : Int   // Units per EM
 }
 ```
 
-## API 接口
+## Modular Architecture
 
-### 主要函数
+### Core Modules
 
-- `parse_font_header(data: Array[Int]) -> ParseResult[FontHeader]`
-  - 解析字体文件头
+- **type**: Data type definitions
+  - `FontHeader` - Font file header
+  - `TableDirectoryEntry` - Table directory entry
+  - `FontInfo` - Basic font information
+  - `ParseResult[T]` - Parse result enumeration
 
-- `parse_table_directory(data: Array[Int]) -> ParseResult[TableDirectory]`
-  - 解析字体表目录
+- **reader**: Binary data reading
+  - `ArrayByteReader` - Byte array reader
+  - Support big-endian/little-endian reading
+  - Provide position control and boundary checking
 
-- `parse_ttf_data(data: Array[Int]) -> ParseResult[FontInfo]`
-  - 解析字体基本信息
+- **parser**: Table parser
+  - Parse various TTF table types
+  - Support cmap, glyf, head, maxp, name tables
 
-- `get_table_info(data: Array[Int]) -> ParseResult[TableDirectory]`
-  - 获取字体表信息
+- **analyzer**: Font feature analysis
+  - Detect color font support
+  - Detect variable font support
+  - Analyze OpenType features
 
-### 错误处理
+- **api**: Unified interface
+  - Provide high-level API functions
+  - Integrate all module functionality
+  - Simplify usage workflow
 
-使用 `ParseResult[T]` 枚举进行错误处理：
+## API Interface
+
+### Main Functions
+
+- `@lib.parse_ttf_from_bytes(data: Array[Int]) -> ParseResult[FontInfo]`
+  - Parse basic font information
+
+- `@lib.get_font_header(data: Array[Int]) -> ParseResult[FontHeader]`
+  - Parse font file header
+
+- `@lib.get_table_directory(data: Array[Int]) -> ParseResult[TableDirectory]`
+  - Parse font table directory
+
+- `@lib.analyze_font_features_from_bytes(data: Array[Int]) -> ParseResult[FontFeatures]`
+  - Analyze font features
+
+- `@lib.is_valid_ttf(data: Array[Int]) -> Bool`
+  - Validate TTF file validity
+
+### File System Support
+
+- `@fs.read_file_to_bytes(path: String) -> Bytes raise IOError`
+  - Read file as byte array
+
+- `@fs.read_file_to_string(path: String, encoding?: String) -> String raise IOError`
+  - Read file as string
+
+- `@fs.path_exists(path: String) -> Bool`
+  - Check if file exists
+
+### Error Handling
+
+Use `ParseResult[T]` enumeration for error handling:
 
 ```moonbit
 pub enum ParseResult[T] {
@@ -90,98 +132,178 @@ pub enum ParseResult[T] {
 }
 ```
 
-## 使用示例
+## Usage Examples
+
+### Basic Usage
 
 ```moonbit
-// 创建测试数据
-let test_data : Array[Int] = [
-  0x00, 0x01, 0x00, 0x00,  // version: 0x00010000
-  0x00, 0x0A,              // num_tables: 10
-  // ... 更多数据
-]
+// Use test data
+let test_fonts = @lib.get_all_test_fonts()
+let (name, data) = test_fonts[0]
 
-// 解析字体信息
-match parse_ttf_data(test_data) {
-  Success(font_info) => {
-    println("字体名称: " + font_info.name)
-    println("字符数量: " + font_info.num_glyphs.to_string())
+// Parse font information
+match @lib.parse_ttf_from_bytes(data) {
+  @types.Success(font_info) => {
+    println("Font name: " + font_info.name)
+    println("Character count: " + font_info.num_glyphs.to_string())
   }
-  Error(msg) => {
-    println("解析失败: " + msg)
+  @types.Error(msg) => {
+    println("Parse failed: " + msg)
   }
 }
 ```
 
-## 运行测试
+### File Reading Example
+
+```moonbit
+// Read real font file
+fn read_font_file(file_path : String) -> Result[Array[Int], String] {
+  try {
+    let content = @fs.read_file_to_bytes(file_path)
+    let mut result = []
+    
+    // Convert Bytes to Array[Int]
+    for i = 0; i < content.length(); i = i + 1 {
+      result = result + [content[i].to_int()]
+    }
+    
+    Ok(result)
+  } catch {
+    err => Err("File read failed: " + err.to_string())
+  }
+}
+
+// Use file data
+match read_font_file("fonts/demo.ttf") {
+  Ok(data) => {
+    // Parse font
+    match @lib.parse_ttf_from_bytes(data) {
+      @types.Success(info) => println("Parse successful: " + info.name)
+      @types.Error(msg) => println("Parse failed: " + msg)
+    }
+  }
+  Err(msg) => println("File read failed: " + msg)
+}
+```
+
+### Font Feature Analysis
+
+```moonbit
+// Analyze font features
+match @lib.analyze_font_features_from_bytes(data) {
+  @types.Success(features) => {
+    if features.has_color {
+      println("Supports color fonts")
+    }
+    if features.has_variable {
+      println("Supports variable fonts")
+    }
+    println("Core table count: " + features.core_table_count.to_string())
+  }
+  @types.Error(msg) => println("Feature analysis failed: " + msg)
+}
+```
+
+## Running Tests
 
 ```bash
-# 运行所有测试
-moon test
+# Check code
+moon check
 
-# 运行演示程序
-moon run cmd/main
+# Run demo program
+moon run src/cmd/main
+
+# Build project
+moon build
 ```
 
-## 测试结果
+## Demo Program Output
 
-演示程序输出示例：
+The program will attempt to read real font files, falling back to test data if it fails:
 
 ```
-=== TTF 字体解析器演示 ===
-正在解析 TTF 数据...
-✓ 字体头解析成功!
-  版本: 0x65536
-  表数量: 10
-  搜索范围: 128
-✓ 表目录解析成功!
-  发现 2 个表:
-    - cmap (偏移: 32, 长度: 16)
-    - glyf (偏移: 48, 长度: 32)
-✓ 字体信息解析成功!
-  字体名称: Unknown Font
-  字体族: Unknown Font
-  样式: Regular
-  字符数量: 0
-  单位每EM: 1000
-=== 测试完成 ===
+Attempting to read real font files (using @fs.read_file_to_bytes)...
+=== Analyzing font file: demo.ttf ===
+Data size: 1234 bytes
+Description: Test font file
+✓ Font format: TTF
+✓ Font header parsing successful!
+  Version: 0x10000
+  Table count: 10
+  Search range: 128
+  Entry selector: 3
+  Range shift: 16
+✓ Table directory parsing successful!
+  Found 10 tables:
+    1. cmap - Offset: 32, Length: 1024 (1KB)
+    2. glyf - Offset: 1056, Length: 2048 (2KB)
+    ...
+✓ Font feature analysis:
+    Table count: 10
+    Core tables: 5/5
+    ✓ Supports color fonts
+    ✓ Supports variable fonts
+    Recommended use: Modern web fonts
+✓ Font information parsing successful!
+  Font name: Demo Font
+  Font family: Demo
+  Font style: Regular
+  Character count: 256
+  Units per EM: 1000
+  16px font size basic metrics:
+    Ascender: 12px
+    Descender: -4px
+    Line height: 16px
 ```
 
-## 支持的字体表类型
+## Supported Font Table Types
 
-- **cmap**: 字符映射表
-- **glyf**: 字形数据表
-- **head**: 字体头表
-- **maxp**: 最大配置文件表
-- **name**: 字体名称表
+- **cmap**: Character mapping table
+- **glyf**: Glyph data table
+- **head**: Font header table
+- **maxp**: Maximum profile table
+- **name**: Font name table
+- **COLR**: Color font table
+- **fvar**: Variable font table
 
-## 技术实现
+## Technical Implementation
 
-- 使用大端序字节序读取数据
-- 支持 16 位和 32 位整数解析
-- 实现了基本的 TTF 文件格式验证
-- 提供了完整的错误处理机制
+- Use big-endian byte order for data reading
+- Support 16-bit and 32-bit integer parsing
+- Implemented basic TTF file format validation
+- Provided comprehensive error handling mechanism
+- Integrated MoonBit official file system library
+- Support real file reading and test data fallback
+- Modular architecture design for easy extension
 
-## 限制
+## Dependencies
 
-当前版本是一个基础实现，主要限制包括：
+- `moonbitlang/x/fs`: File system support
+- `moonbitlang/x/json5`: JSON5 parsing (optional)
 
-- 仅支持基本的 TTF 文件结构解析
-- 字体名称解析功能简化
-- 不支持复杂的字形数据解析
-- 文件读取功能需要根据 MoonBit 的文件系统 API 实现
+## Feature Support
 
-## 未来改进
+- ✅ Basic TTF file parsing
+- ✅ Color font (COLR) support
+- ✅ Variable font support
+- ✅ OpenType feature detection
+- ✅ File system integration
+- ✅ Error handling and fallback options
+- ✅ Modular architecture
 
-- [ ] 完善字体名称表解析
-- [ ] 支持更多字体表类型
-- [ ] 添加字形轮廓数据解析
-- [ ] 实现文件系统支持
-- [ ] 添加更多测试用例
+## Future Improvements
 
-## 许可证
+- [ ] Improve font name table parsing
+- [ ] Support more font table types
+- [ ] Add glyph outline data parsing
+- [ ] Support WOFF/WOFF2 formats
+- [ ] Add more test cases
+- [ ] Performance optimization
+
+## License
 
 Apache-2.0
 
-## 贡献
+## Contributing
 
-欢迎提交 Issue 和 Pull Request 来改进这个项目！
+Issues and Pull Requests are welcome to improve this project!
