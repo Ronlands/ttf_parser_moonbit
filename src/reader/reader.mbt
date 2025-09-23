@@ -74,50 +74,36 @@ pub fn[R : ByteReader] read_tag(reader : R) -> Option[String] {
 /// 将字节转换为标签字符串
 pub fn bytes_to_tag_string(b0 : Int, b1 : Int, b2 : Int, b3 : Int) -> String {
   // 根据字节值返回对应的标签字符串
-  if b0 == 0x63 && b1 == 0x6D && b2 == 0x61 && b3 == 0x70 {
-    "cmap"
-  } else if b0 == 0x67 && b1 == 0x6C && b2 == 0x79 && b3 == 0x66 {
-    "glyf"
-  } else if b0 == 0x68 && b1 == 0x65 && b2 == 0x61 && b3 == 0x64 {
-    "head"
-  } else if b0 == 0x68 && b1 == 0x68 && b2 == 0x65 && b3 == 0x61 {
-    "hhea"
-  } else if b0 == 0x68 && b1 == 0x6D && b2 == 0x74 && b3 == 0x78 {
-    "hmtx"
-  } else if b0 == 0x6C && b1 == 0x6F && b2 == 0x63 && b3 == 0x61 {
-    "loca"
-  } else if b0 == 0x6D && b1 == 0x61 && b2 == 0x78 && b3 == 0x70 {
-    "maxp"
-  } else if b0 == 0x6E && b1 == 0x61 && b2 == 0x6D && b3 == 0x65 {
-    "name"
-  } else if b0 == 0x4F && b1 == 0x53 && b2 == 0x2F && b3 == 0x32 {
-    "OS/2"
-  } else if b0 == 0x70 && b1 == 0x6F && b2 == 0x73 && b3 == 0x74 {
-    "post"
-  } else if b0 == 0x43 && b1 == 0x4F && b2 == 0x4C && b3 == 0x52 {
-    "COLR"
-  } else if b0 == 0x43 && b1 == 0x50 && b2 == 0x41 && b3 == 0x4C {
-    "CPAL"
-  } else if b0 == 0x48 && b1 == 0x56 && b2 == 0x41 && b3 == 0x52 {
-    "HVAR"
-  } else if b0 == 0x53 && b1 == 0x54 && b2 == 0x41 && b3 == 0x54 {
-    "STAT"
-  } else if b0 == 0x66 && b1 == 0x76 && b2 == 0x61 && b3 == 0x72 {
-    "fvar"
-  } else if b0 == 0x67 && b1 == 0x76 && b2 == 0x61 && b3 == 0x72 {
-    "gvar"
-  } else {
-    // 如果无法识别，返回原始字节的ASCII表示
-    let mut result = ""
-    let bytes = [b0, b1, b2, b3]
-    for i = 0; i < 4; i = i + 1 {
-      let byte = bytes[i]
-      if byte >= 32 && byte <= 126 { 
-        result = result + Int::unsafe_to_char(byte).to_string() 
-      } else { 
-        result = result + "?" 
+  match (b0, b1, b2, b3) {
+    (0x63, 0x6D, 0x61, 0x70) => "cmap"
+    (0x67, 0x6C, 0x79, 0x66) => "glyf"
+    (0x68, 0x65, 0x61, 0x64) => "head"
+    (0x68, 0x68, 0x65, 0x61) => "hhea"
+    (0x68, 0x6D, 0x74, 0x78) => "hmtx"
+    (0x6C, 0x6F, 0x63, 0x61) => "loca"
+    (0x6D, 0x61, 0x78, 0x70) => "maxp"
+    (0x6E, 0x61, 0x6D, 0x65) => "name"
+    (0x4F, 0x53, 0x2F, 0x32) => "OS/2"
+    (0x70, 0x6F, 0x73, 0x74) => "post"
+    (0x43, 0x4F, 0x4C, 0x52) => "COLR"
+    (0x43, 0x50, 0x41, 0x4C) => "CPAL"
+    (0x48, 0x56, 0x41, 0x52) => "HVAR"
+    (0x53, 0x54, 0x41, 0x54) => "STAT"
+    (0x66, 0x76, 0x61, 0x72) => "fvar"
+    (0x67, 0x76, 0x61, 0x72) => "gvar"
+    _ => {
+      // 如果无法识别，返回原始字节的ASCII表示
+      let mut result = ""
+      let bytes = [b0, b1, b2, b3]
+      for i = 0; i < 4; i = i + 1 {
+        let byte = bytes[i]
+        if byte >= 32 && byte <= 126 { 
+          result = result + Int::unsafe_to_char(byte).to_string() 
+        } else { 
+          result = result + "?" 
+        }
       }
+      result
     }
-    result
   }
 }
