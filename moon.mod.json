@@ -5,9 +5,9 @@
     "moonbitlang/x": "0.4.34"
   },
   "readme": "README.md",
-  "repository": "",
+  "repository": "https://github.com/your-username/ttf_parser_moonbit",
   "license": "Apache-2.0",
-  "keywords": [],
-  "description": "",
+  "keywords": ["ttf", "font", "parser", "moonbit", "typography"],
+  "description": "A TrueType font file parser written in MoonBit language that supports parsing TTF file structures and key data",
   "source": "src"
 }
