@@ -1,35 +1,35 @@
-/// TTF 字体解析器 - 高级API模块
-/// 提供简洁易用的公共接口
+/// TTF Font Parser - Advanced API Module
+/// Provides simple and easy-to-use public interfaces
 
-// ==================== 高级API ====================
+// ==================== Advanced API ====================
 
-/// 从字节数组解析 TTF 字体
+/// Parse TTF font from byte array
 pub fn parse_ttf_from_bytes(data : Array[Int]) -> @types.ParseResult[@types.FontInfo] {
   let reader = @reader.ArrayByteReader::new(data)
   
-  // 解析表目录
+  // Parse table directory
   match @parser.parse_table_directory(reader) {
     @types.Success(tables) => {
-      // 提取字体信息
+      // Extract font information
       @analyzer.extract_font_info(reader, tables)
     }
-    @types.Error(msg) => @types.make_error("表目录解析失败: " + msg)
+    @types.Error(msg) => @types.make_error("Table directory parsing failed: " + msg)
   }
 }
 
-/// 获取字体表目录信息
+/// Get font table directory information
 pub fn get_table_directory(data : Array[Int]) -> @types.ParseResult[@types.TableDirectory] {
   let reader = @reader.ArrayByteReader::new(data)
   @parser.parse_table_directory(reader)
 }
 
-/// 获取字体文件头信息
+/// Get font file header information
 pub fn get_font_header(data : Array[Int]) -> @types.ParseResult[@types.FontHeader] {
   let reader = @reader.ArrayByteReader::new(data)
   @parser.parse_font_header(reader)
 }
 
-/// 获取字体特性分析
+/// Get font feature analysis
 pub fn analyze_font_features_from_bytes(data : Array[Int]) -> @types.ParseResult[@types.FontFeatures] {
   let reader = @reader.ArrayByteReader::new(data)
   match @parser.parse_table_directory(reader) {
@@ -40,7 +40,7 @@ pub fn analyze_font_features_from_bytes(data : Array[Int]) -> @types.ParseResult
   }
 }
 
-/// 检查字体是否支持彩色
+/// Check if font supports color
 pub fn is_color_font(data : Array[Int]) -> Bool {
   match analyze_font_features_from_bytes(data) {
     @types.Success(features) => features.has_color
@@ -48,7 +48,7 @@ pub fn is_color_font(data : Array[Int]) -> Bool {
   }
 }
 
-/// 检查字体是否为可变字体
+/// Check if font is variable font
 pub fn is_variable_font(data : Array[Int]) -> Bool {
   match analyze_font_features_from_bytes(data) {
     @types.Success(features) => features.has_variable
@@ -56,7 +56,7 @@ pub fn is_variable_font(data : Array[Int]) -> Bool {
   }
 }
 
-/// 检查字体文件是否有效
+/// Check if font file is valid
 pub fn is_valid_ttf(data : Array[Int]) -> Bool {
   match get_font_header(data) {
     @types.Success(header) => header.version == 0x00010000
@@ -64,7 +64,7 @@ pub fn is_valid_ttf(data : Array[Int]) -> Bool {
   }
 }
 
-/// 获取字体格式描述
+/// Get font format description
 pub fn get_font_format(data : Array[Int]) -> String {
   match get_font_header(data) {
     @types.Success(header) => {
@@ -80,37 +80,37 @@ pub fn get_font_format(data : Array[Int]) -> String {
   }
 }
 
-/// 获取字体使用建议
+/// Get font usage recommendations
 pub fn get_font_usage_recommendation(data : Array[Int]) -> String {
   match analyze_font_features_from_bytes(data) {
     @types.Success(features) => {
       if features.has_variable && features.has_color {
-        "适用于现代网页和移动应用，支持动态样式和彩色显示"
+        "Suitable for modern web and mobile applications, supports dynamic styles and color display"
       } else if features.has_variable {
-        "适用于响应式设计，支持动态字重和宽度调整"
+        "Suitable for responsive design, supports dynamic font weight and width adjustment"
       } else if features.has_color {
-        "适用于表情符号、图标和装饰性文本"
+        "Suitable for emojis, icons and decorative text"
       } else if features.has_opentype_features {
-        "适用于高质量排版，支持高级字体特性"
+        "Suitable for high-quality typography, supports advanced font features"
       } else {
-        "适用于一般文本显示"
+        "Suitable for general text display"
       }
     }
-    @types.Error(_) => "无法确定字体用途"
+    @types.Error(_) => "Unable to determine font usage"
   }
 }
 
-/// 获取所有测试字体数据
+/// Get all test font data
 pub fn get_all_test_fonts() -> Array[(String, Array[Int])] {
   @test_data.get_all_test_fonts()
 }
 
-/// 获取测试字体的描述信息
+/// Get test font description information
 pub fn get_font_description(name : String) -> String {
   @test_data.get_font_description(name)
 }
 
-/// 检查表标签是否为核心表
+/// Check if table tag is a core table
 pub fn is_core_table_check(tag : String) -> Bool {
   @analyzer.is_core_table_check(tag)
 }

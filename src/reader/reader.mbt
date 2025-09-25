@@ -1,32 +1,32 @@
-/// TTF 字体解析器 - 二进制读取模块
-/// 提供字节流读取功能
+/// TTF Font Parser - Binary Reading Module
+/// Provides byte stream reading functionality
 
-// ==================== 二进制读取模块 ====================
+// ==================== Binary Reading Module ====================
 
-/// 字节流读取器接口
+/// Byte stream reader interface
 pub trait ByteReader {
-  /// 读取一个字节
+  /// Read one byte
   read_byte(Self) -> Option[Int]
-  /// 获取当前位置
+  /// Get current position
   position(Self) -> Int
-  /// 设置位置
+  /// Set position
   seek(Self, Int) -> Unit
-  /// 获取总长度
+  /// Get total length
   length(Self) -> Int
 }
 
-/// 数组字节读取器实现
+/// Array byte reader implementation
 pub struct ArrayByteReader {
   data : Array[Int]
   mut pos : Int
 } derive(Show)
 
-/// 创建数组字节读取器
+/// Create array byte reader
 pub fn ArrayByteReader::new(data : Array[Int]) -> ArrayByteReader {
   { data: data, pos: 0 }
 }
 
-/// 为 ArrayByteReader 实现 ByteReader trait
+/// Implement ByteReader trait for ArrayByteReader
 pub impl ByteReader for ArrayByteReader with read_byte(self) {
   if self.pos < self.data.length() {
     let byte = self.data[self.pos]
@@ -41,7 +41,7 @@ pub impl ByteReader for ArrayByteReader with position(self) { self.pos }
 pub impl ByteReader for ArrayByteReader with seek(self, pos) { self.pos = pos }
 pub impl ByteReader for ArrayByteReader with length(self) { self.data.length() }
 
-/// 从字节读取器中读取大端序 32 位整数
+/// Read big-endian 32-bit integer from byte reader
 pub fn[R : ByteReader] read_u32_be(reader : R) -> Option[Int] {
   match (reader.read_byte(), reader.read_byte(), reader.read_byte(), reader.read_byte()) {
     (Some(b0), Some(b1), Some(b2), Some(b3)) => {
@@ -51,7 +51,7 @@ pub fn[R : ByteReader] read_u32_be(reader : R) -> Option[Int] {
   }
 }
 
-/// 从字节读取器中读取大端序 16 位整数
+/// Read big-endian 16-bit integer from byte reader
 pub fn[R : ByteReader] read_u16_be(reader : R) -> Option[Int] {
   match (reader.read_byte(), reader.read_byte()) {
     (Some(b0), Some(b1)) => {
@@ -61,7 +61,7 @@ pub fn[R : ByteReader] read_u16_be(reader : R) -> Option[Int] {
   }
 }
 
-/// 从字节读取器中读取 4 字符标签
+/// Read 4-character tag from byte reader
 pub fn[R : ByteReader] read_tag(reader : R) -> Option[String] {
   match (reader.read_byte(), reader.read_byte(), reader.read_byte(), reader.read_byte()) {
     (Some(b0), Some(b1), Some(b2), Some(b3)) => {
@@ -71,9 +71,9 @@ pub fn[R : ByteReader] read_tag(reader : R) -> Option[String] {
   }
 }
 
-/// 将字节转换为标签字符串
+/// Convert bytes to tag string
 pub fn bytes_to_tag_string(b0 : Int, b1 : Int, b2 : Int, b3 : Int) -> String {
-  // 根据字节值返回对应的标签字符串
+  // Return corresponding tag string based on byte values
   match (b0, b1, b2, b3) {
     (0x63, 0x6D, 0x61, 0x70) => "cmap"
     (0x67, 0x6C, 0x79, 0x66) => "glyf"
@@ -92,7 +92,7 @@ pub fn bytes_to_tag_string(b0 : Int, b1 : Int, b2 : Int, b3 : Int) -> String {
     (0x66, 0x76, 0x61, 0x72) => "fvar"
     (0x67, 0x76, 0x61, 0x72) => "gvar"
     _ => {
-      // 如果无法识别，返回原始字节的ASCII表示
+      // If unrecognized, return ASCII representation of original bytes
       let mut result = ""
       let bytes = [b0, b1, b2, b3]
       for i = 0; i < 4; i = i + 1 {

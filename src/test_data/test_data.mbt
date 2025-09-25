@@ -1,9 +1,9 @@
-/// TTF 字体解析器 - 测试数据模块
-/// 提供用于测试的字体数据
+/// TTF Font Parser - Test Data Module
+/// Provides font data for testing
 
-// ==================== 测试数据 ====================
+// ==================== Test Data ====================
 
-/// 真实的 TTF 文件数据 - demo.ttf 的前200字节
+/// Real TTF file data - first 200 bytes of demo.ttf
 pub let demo_ttf_data : Array[Int] = [
   0x00, 0x01, 0x00, 0x00, 0x00, 0x07, 0x00, 0x40, 
   0x00, 0x02, 0x00, 0x30, 0x63, 0x6D, 0x61, 0x70, 
@@ -32,7 +32,7 @@ pub let demo_ttf_data : Array[Int] = [
   0x00, 0x06, 0xFF, 0xFF, 0x02, 0x58, 0x00, 0x01
 ]
 
-/// 真实的 TTF 文件数据 - colr_1.ttf 的前200字节
+/// Real TTF file data - first 200 bytes of colr_1.ttf
 pub let colr1_ttf_data : Array[Int] = [
   0x00, 0x01, 0x00, 0x00, 0x00, 0x0C, 0x00, 0x80,
   0x00, 0x03, 0x00, 0x40, 0x43, 0x4F, 0x4C, 0x52, 
@@ -61,7 +61,7 @@ pub let colr1_ttf_data : Array[Int] = [
   0xEB, 0x27, 0x81, 0x4B, 0x00, 0x00, 0x20, 0xF8
 ]
 
-/// 真实的 TTF 文件数据 - colr_1_variable.ttf 的前200字节
+/// Real TTF file data - first 200 bytes of colr_1_variable.ttf
 pub let colr1_var_ttf_data : Array[Int] = [
   0x00, 0x01, 0x00, 0x00, 0x00, 0x10, 0x01, 0x00,
   0x00, 0x04, 0x00, 0x00, 0x43, 0x4F, 0x4C, 0x52, 
@@ -90,7 +90,7 @@ pub let colr1_var_ttf_data : Array[Int] = [
   0x93, 0x2E, 0x17, 0x13, 0x00, 0x00, 0x01, 0xE8
 ]
 
-/// 获取所有测试字体数据
+/// Get all test font data
 pub fn get_all_test_fonts() -> Array[(String, Array[Int])] {
   [
     ("demo.ttf", demo_ttf_data),
@@ -99,15 +99,15 @@ pub fn get_all_test_fonts() -> Array[(String, Array[Int])] {
   ]
 }
 
-/// 获取测试字体的描述信息
+/// Get test font description information
 pub fn get_font_description(name : String) -> String {
   if name == "demo.ttf" {
-    "基础单色字体 (400B) - 包含7个核心表"
+    "Basic monochrome font (400B) - Contains 7 core tables"
   } else if name == "colr_1.ttf" {
-    "彩色字体 (21KB) - 支持COLR/CPAL彩色显示"
+    "Color font (21KB) - Supports COLR/CPAL color display"
   } else if name == "colr_1_variable.ttf" {
-    "可变彩色字体 (52KB) - 支持Variable Font和彩色显示"
+    "Variable color font (52KB) - Supports Variable Font and color display"
   } else {
-    "未知字体文件"
+    "Unknown font file"
   }
 }

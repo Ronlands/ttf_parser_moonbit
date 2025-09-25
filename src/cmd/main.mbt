@@ -1,92 +1,92 @@
-/// TTF 字体解析器演示程序
-/// 使用模块化的 MoonBit TTF 解析器
+/// TTF Font Parser Demo Program
+/// Using modular MoonBit TTF parser
 
 fn demo_reader_usage(data : Array[Int]) -> Unit {
   
-  // 使用 reader 模块创建字节读取器
+  // Use reader module to create byte reader
   let reader = @reader.ArrayByteReader::new(data)
   
-  println("  数据长度: " + reader.length().to_string() + " 字节")
-  println("  当前位置: " + reader.position().to_string())
+  println("  Data length: " + reader.length().to_string() + " bytes")
+  println("  Current position: " + reader.position().to_string())
   
-  // 演示读取 TTF 文件头（版本号）
+  // Demo reading TTF file header (version number)
   match @reader.read_u32_be(reader) {
     Some(version) => {
-      println("  文件版本: 0x" + version.to_string())
+      println("  File version: 0x" + version.to_string())
       if version == 0x00010000 {
-        println("  ✓ 这是有效的 TTF 文件")
+        println("  ✓ This is a valid TTF file")
       } else {
-        println("  ⚠ 可能不是标准 TTF 文件")
+        println("  ⚠ May not be a standard TTF file")
       }
     }
-    None => println("  ✗ 无法读取文件版本")
+    None => println("  ✗ Unable to read file version")
   }
   
-  // 重置位置
+  // Reset position
   reader.seek(0)
-  println("  位置重置为: " + reader.position().to_string())
+  println("  Position reset to: " + reader.position().to_string())
   println("")
 }
 
 
 
-/// 分析并显示字体文件信息
+/// Analyze and display font file information
 fn analyze_font(name : String, data : Array[Int]) -> Unit {
-  println("=== 分析字体文件: " + name + " ===")
-  println("数据大小: " + data.length().to_string() + " 字节")
-  println("描述: " + @lib.get_font_description(name))
+  println("=== Analyzing font file: " + name + " ===")
+  println("Data size: " + data.length().to_string() + " bytes")
+  println("Description: " + @lib.get_font_description(name))
   
-  // 显示解析进度
+  // Show parsing progress
   if data.length() > 500000 {
-    println("解析进度: █")
+    println("Parsing progress: █")
   }
   
-  // 检查字体文件有效性
+  // Check font file validity
   if !@lib.is_valid_ttf(data) {
-    println("✗ 无效的TTF文件!")
+    println("✗ Invalid TTF file!")
     return
   }
   
   if data.length() > 500000 {
-    println("解析进度: ██")
+    println("Parsing progress: ██")
   }
   
-  // 获取字体格式
+  // Get font format
   let format = @lib.get_font_format(data)
-  println("✓ 字体格式: " + format)
+  println("✓ Font format: " + format)
   
-  // 解析字体文件头
+  // Parse font file header
   if data.length() > 500000 {
-    println("解析进度: ███")
+    println("Parsing progress: ███")
   }
   
   match @lib.get_font_header(data) {
     @types.Success(header) => {
-      println("✓ 字体头解析成功!")
-      println("  版本: 0x" + header.version.to_string())
-      println("  表数量: " + header.num_tables.to_string())
-      println("  搜索范围: " + header.search_range.to_string())
-      println("  入口选择器: " + header.entry_selector.to_string())
-      println("  范围移位: " + header.range_shift.to_string())
+      println("✓ Font header parsing successful!")
+      println("  Version: 0x" + header.version.to_string())
+      println("  Number of tables: " + header.num_tables.to_string())
+      println("  Search range: " + header.search_range.to_string())
+      println("  Entry selector: " + header.entry_selector.to_string())
+      println("  Range shift: " + header.range_shift.to_string())
     }
     @types.Error(msg) => {
-      println("✗ 字体头解析失败: " + msg)
+      println("✗ Font header parsing failed: " + msg)
       return
     }
   }
   
   if data.length() > 500000 {
-    println("解析进度: ████")
+    println("Parsing progress: ████")
   }
   
-  // 解析表目录
+  // Parse table directory
   
   match @lib.get_table_directory(data) {
     @types.Success(tables) => {
-      println("✓ 表目录解析成功!")
-      println("  发现 " + tables.entries.length().to_string() + " 个表:")
+      println("✓ Table directory parsing successful!")
+      println("  Found " + tables.entries.length().to_string() + " tables:")
       
-      // 显示所有表的信息
+      // Display information for all tables
       for i = 0; i < tables.entries.length(); i = i + 1 {
         let entry = tables.entries[i]
         let size_kb = if entry.length > 1024 { 
@@ -94,25 +94,25 @@ fn analyze_font(name : String, data : Array[Int]) -> Unit {
         } else { 
           " (" + entry.length.to_string() + "B)" 
         }
-        println("    " + (i + 1).to_string() + ". " + entry.tag + " - 偏移: " + entry.offset.to_string() + ", 长度: " + entry.length.to_string() + size_kb)
+        println("    " + (i + 1).to_string() + ". " + entry.tag + " - Offset: " + entry.offset.to_string() + ", Length: " + entry.length.to_string() + size_kb)
       }
     }
     @types.Error(msg) => {
-      println("✗ 表目录解析失败: " + msg)
+      println("✗ Table directory parsing failed: " + msg)
       return
     }
   }
   
   if data.length() > 500000 {
-    println("解析进度: █████")
+    println("Parsing progress: █████")
   }
   
-  // 分析字体特性
+  // Analyze font features
   
   match @lib.analyze_font_features_from_bytes(data) {
     @types.Success(features) => {
-      println("✓ 字体特性分析:")
-      println("    表数量: " + features.table_count.to_string())
+      println("✓ Font feature analysis:")
+      println("    Table count: " + features.table_count.to_string())
       
       let mut core_table_count = 0
       for i = 0; i < features.supported_tables.length(); i = i + 1 {
@@ -120,111 +120,111 @@ fn analyze_font(name : String, data : Array[Int]) -> Unit {
           core_table_count = core_table_count + 1
         }
       }
-      println("    核心表: " + core_table_count.to_string() + "/5 个")
+      println("    Core tables: " + core_table_count.to_string() + "/5")
       
       if features.has_color {
-        println("    ✓ 支持彩色字体")
+        println("    ✓ Supports color fonts")
       }
       if features.has_variable {
-        println("    ✓ 支持可变字体")
+        println("    ✓ Supports variable fonts")
       }
       if features.has_opentype_features {
-        println("    ✓ 支持OpenType特性")
+        println("    ✓ Supports OpenType features")
       }
       if !features.has_color && !features.has_variable {
-        println("    - 标准单色字体")
+        println("    - Standard monochrome font")
       }
       
-      // 显示使用建议
+      // Show usage recommendations
       let recommendation = @lib.get_font_usage_recommendation(data)
-      println("    建议用途: " + recommendation)
+      println("    Recommended usage: " + recommendation)
     }
     @types.Error(msg) => {
-      println("✗ 字体特性分析失败: " + msg)
+      println("✗ Font feature analysis failed: " + msg)
     }
   }
   
   if data.length() > 500000 {
-    println("解析进度: ██████")
+    println("Parsing progress: ██████")
   }
   
-  // 解析字体基本信息
+  // Parse basic font information
   
   match @lib.parse_ttf_from_bytes(data) {
     @types.Success(info) => {
-      println("✓ 字体信息解析成功!")
-      println("  字体名称: " + info.name)
-      println("  字体族: " + info.family)
-      println("  字体样式: " + info.style)
-      println("  字体版本: " + info.version)
-      println("  字符数量: " + info.num_glyphs.to_string())
-      println("  单位每EM: " + info.units_per_em.to_string())
-      println("  上升高度: " + info.ascender.to_string())
-      println("  下降高度: " + info.descender.to_string())
-      println("  行间距: " + info.line_gap.to_string())
+      println("✓ Font information parsing successful!")
+      println("  Font name: " + info.name)
+      println("  Font family: " + info.family)
+      println("  Font style: " + info.style)
+      println("  Font version: " + info.version)
+      println("  Number of characters: " + info.num_glyphs.to_string())
+      println("  Units per EM: " + info.units_per_em.to_string())
+      println("  Ascender: " + info.ascender.to_string())
+      println("  Descender: " + info.descender.to_string())
+      println("  Line gap: " + info.line_gap.to_string())
       
-      // 显示字体度量信息
+      // Display font metrics information
       let font_size = 16
-      println("  " + font_size.to_string() + "px字号基本度量:")
-      println("    上升高度: " + (info.ascender * font_size / info.units_per_em).to_string() + "px")
-      println("    下降高度: " + (info.descender * font_size / info.units_per_em).to_string() + "px") 
+      println("  " + font_size.to_string() + "px font size basic metrics:")
+      println("    Ascender: " + (info.ascender * font_size / info.units_per_em).to_string() + "px")
+      println("    Descender: " + (info.descender * font_size / info.units_per_em).to_string() + "px") 
       let line_height = (info.ascender - info.descender + info.line_gap) * font_size / info.units_per_em
-      println("    行高: " + line_height.to_string() + "px")
+      println("    Line height: " + line_height.to_string() + "px")
     }
     @types.Error(msg) => {
-      println("✗ 字体信息解析失败: " + msg)
+      println("✗ Font information parsing failed: " + msg)
     }
   }
   
-  // 完成进度条
+  // Complete progress bar
   if data.length() > 500000 {
-    println("解析进度: ████████████████████ 100%")
-    println("大文件解析完成!")
+    println("Parsing progress: ████████████████████ 100%")
+    println("Large file parsing completed!")
   }
   
   println("")
 }
 
-/// 分析字体文件
+/// Analyze font file
 fn analyze_real_font(file_path : String) -> Unit {
-  println("=== 尝试读取字体文件: " + file_path + " ===")
+  println("=== Attempting to read font file: " + file_path + " ===")
   
-  // 一次性读取文件并检查大小
+  // Read file once and check size
   try {
     let content = @fs.read_file_to_bytes(file_path)
     let file_size = content.length()
     
-    // 显示文件大小信息
+    // Display file size information
     if file_size > 1000000 {
-      println("文件大小: " + (file_size / 1024 / 1024).to_string() + "MB")
+      println("File size: " + (file_size / 1024 / 1024).to_string() + "MB")
     } else if file_size > 1000 {
-      println("文件大小: " + (file_size / 1024).to_string() + "KB")
+      println("File size: " + (file_size / 1024).to_string() + "KB")
     } else {
-      println("文件大小: " + file_size.to_string() + "B")
+      println("File size: " + file_size.to_string() + "B")
     }
     
-    // 显示处理进度
+    // Show processing progress
     if file_size > 500000 {
-      println("正在处理大文件，请稍候...")
-      println("读取文件: ████████████████████ 100%")
+      println("Processing large file, please wait...")
+      println("Reading file: ████████████████████ 100%")
     }
     
-    // 直接使用已读取的内容，避免重复读取
-    // 对于大文件，跳过详细的转换过程，只做基本分析
+    // Use the already read content directly, avoid re-reading
+    // For large files, skip detailed conversion process, only do basic analysis
     let mut result = []
     
     if file_size > 1000000 {
-      // 超大文件：只读取前100KB进行分析
-      println("文件过大，只分析前100KB数据...")
+      // Very large file: only read first 100KB for analysis
+      println("File too large, analyzing only first 100KB of data...")
       let sample_size = 100000
       for i = 0; i < sample_size && i < content.length(); i = i + 1 {
         result = result + [content[i].to_int()]
       }
     } else if file_size > 100000 {
-      // 大文件：分批转换
+      // Large file: convert in batches
       let batch_size = 100000
       let total_batches = (file_size + batch_size - 1) / batch_size
-      println("转换数据格式: 0/" + total_batches.to_string() + " 批次")
+      println("Converting data format: 0/" + total_batches.to_string() + " batches")
       
       for batch = 0; batch < total_batches; batch = batch + 1 {
         let start = batch * batch_size
@@ -234,22 +234,22 @@ fn analyze_real_font(file_path : String) -> Unit {
           result = result + [content[i].to_int()]
         }
         
-        // 显示进度
+        // Show progress
         if batch % 2 == 0 || batch == total_batches - 1 {
-          println("转换数据格式: " + (batch + 1).to_string() + "/" + total_batches.to_string() + " 批次")
+          println("Converting data format: " + (batch + 1).to_string() + "/" + total_batches.to_string() + " batches")
         }
       }
     } else {
-      // 小文件：直接转换
+      // Small file: direct conversion
       for i = 0; i < content.length(); i = i + 1 {
         result = result + [content[i].to_int()]
       }
     }
     
-    // 简单提取文件名（从路径中）
+    // Simple filename extraction (from path)
     let mut file_name = file_path
     let path_parts = file_path.split("/")
-    // 将迭代器转换为数组
+    // Convert iterator to array
     let parts_array = path_parts.to_array()
     if parts_array.length() > 0 {
       file_name = parts_array[parts_array.length() - 1].to_string()
@@ -258,19 +258,19 @@ fn analyze_real_font(file_path : String) -> Unit {
     analyze_font(file_name, result)
   } catch {
     _ => {
-      println("✗ 无法读取文件: " + file_path)
+      println("✗ Unable to read file: " + file_path)
       println("")
-      println("回退到测试数据演示...")
-      // 作为备选方案，使用对应的测试数据
+      println("Falling back to test data demo...")
+      // As fallback, use corresponding test data
       if file_path.contains("demo.ttf") {
         let (name, data) = @lib.get_all_test_fonts()[0]
-        analyze_font(name + " (测试数据)", data)
+        analyze_font(name + " (test data)", data)
       } else if file_path.contains("colr_1.ttf") && !file_path.contains("variable") {
         let (name, data) = @lib.get_all_test_fonts()[1]
-        analyze_font(name + " (测试数据)", data)
+        analyze_font(name + " (test data)", data)
       } else if file_path.contains("colr_1_variable.ttf") {
         let (name, data) = @lib.get_all_test_fonts()[2]
-        analyze_font(name + " (测试数据)", data)
+        analyze_font(name + " (test data)", data)
       }
       println("")
     }
@@ -284,7 +284,7 @@ fn main {
     demo_reader_usage(sample_data)
   }
   
-  // 尝试读取字体文件
+  // Try to read font files
   let font_files = [
     "src/fonts/demo.ttf", 
     "src/fonts/colr_1.ttf", 
@@ -298,7 +298,7 @@ fn main {
     "src/fonts/marker.ttf"
   ]
   
-  println("尝试读取字体文件 (使用 @x.fs.read_file_to_bytes)...")
+  println("Attempting to read font files (using @x.fs.read_file_to_bytes)...")
   println("")
   
   for i = 0; i < font_files.length(); i = i + 1 {
@@ -306,11 +306,11 @@ fn main {
   }
   
   println("========================================")
-  println("           使用内嵌测试数据")
+  println("           Using embedded test data")
   println("========================================")
   println("")
   
-  // 使用模块化的测试数据进行完整演示
+  // Use modular test data for complete demonstration
   for i = 0; i < test_fonts.length(); i = i + 1 {
     let (name, data) = test_fonts[i]
     analyze_font(name, data)

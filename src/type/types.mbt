@@ -1,151 +1,151 @@
-/// TTF 字体解析器 - 数据类型定义模块
-/// 定义所有用于字体解析的数据结构
+/// TTF Font Parser - Data Type Definitions Module
+/// Defines all data structures used for font parsing
 
-// ==================== 数据类型定义模块 ====================
+// ==================== Data Type Definitions Module ====================
 
-/// 解析结果
+/// Parse result
 pub enum ParseResult[T] {
   Success(T)
   Error(String)
 } derive(Show)
 
-/// 字体文件头结构
+/// Font file header structure
 pub struct FontHeader {
-  /// 字体版本号 (通常是 0x00010000)
+  /// Font version number (usually 0x00010000)
   version : Int
-  /// 字体表数量
+  /// Number of font tables
   num_tables : Int
-  /// 搜索范围
+  /// Search range
   search_range : Int
-  /// 入口选择器
+  /// Entry selector
   entry_selector : Int
-  /// 范围移位
+  /// Range shift
   range_shift : Int
 } derive(Show)
 
-/// 字体表目录项
+/// Font table directory entry
 pub struct TableDirectoryEntry {
-  /// 表标签 (4字节标识符)
+  /// Table tag (4-byte identifier)
   tag : String
-  /// 校验和
+  /// Checksum
   checksum : Int
-  /// 表在文件中的偏移量
+  /// Table offset in file
   offset : Int
-  /// 表的长度
+  /// Table length
   length : Int
 } derive(Show)
 
-/// 字体表目录
+/// Font table directory
 pub struct TableDirectory {
-  /// 字体头
+  /// Font header
   header : FontHeader
-  /// 表目录项列表
+  /// List of table directory entries
   entries : Array[TableDirectoryEntry]
 } derive(Show)
 
-/// head 表结构
+/// head table structure
 pub struct HeadTable {
-  /// 表版本
+  /// Table version
   version : Int
-  /// 字体修订版本
+  /// Font revision version
   font_revision : Int
-  /// 校验和调整
+  /// Checksum adjustment
   checksum_adjustment : Int
-  /// 魔术数字（应为 0x5F0F3CF5）
+  /// Magic number (should be 0x5F0F3CF5)
   magic_number : Int
-  /// 标志
+  /// Flags
   flags : Int
-  /// 单位每EM
+  /// Units per EM
   units_per_em : Int
-  /// 创建时间
+  /// Creation time
   created : Int
-  /// 修改时间
+  /// Modification time
   modified : Int
-  /// 最小x坐标
+  /// Minimum x coordinate
   x_min : Int
-  /// 最小y坐标
+  /// Minimum y coordinate
   y_min : Int
-  /// 最大x坐标
+  /// Maximum x coordinate
   x_max : Int
-  /// 最大y坐标
+  /// Maximum y coordinate
   y_max : Int
-  /// 字体样式
+  /// Font style
   mac_style : Int
-  /// 最小可读像素大小
+  /// Minimum readable pixel size
   lowest_rec_ppem : Int
-  /// 字体方向提示
+  /// Font direction hint
   font_direction_hint : Int
-  /// 索引到位置格式
+  /// Index to location format
   index_to_loc_format : Int
-  /// 字形数据格式
+  /// Glyph data format
   glyph_data_format : Int
 } derive(Show)
 
-/// maxp 表结构
+/// maxp table structure
 pub struct MaxpTable {
-  /// 表版本
+  /// Table version
   version : Int
-  /// 字形数量
+  /// Number of glyphs
   num_glyphs : Int
-  /// 最大点数
+  /// Maximum points
   max_points : Int
-  /// 最大轮廓数
+  /// Maximum contours
   max_contours : Int
-  /// 最大组合点数
+  /// Maximum composite points
   max_composite_points : Int
-  /// 最大组合轮廓数
+  /// Maximum composite contours
   max_composite_contours : Int
 } derive(Show)
 
-/// 字体基本信息
+/// Basic font information
 pub struct FontInfo {
-  /// 字体名称
+  /// Font name
   name : String
-  /// 字体族名称
+  /// Font family name
   family : String
-  /// 字体样式
+  /// Font style
   style : String
-  /// 字体版本
+  /// Font version
   version : String
-  /// 字符数量
+  /// Number of characters
   num_glyphs : Int
-  /// 单位每EM
+  /// Units per EM
   units_per_em : Int
-  /// 上升高度
+  /// Ascender height
   ascender : Int
-  /// 下降高度
+  /// Descender height
   descender : Int
-  /// 行间距
+  /// Line gap
   line_gap : Int
 } derive(Show)
 
-/// 字体特性分析
+/// Font feature analysis
 pub struct FontFeatures {
-  /// 是否支持彩色字体
+  /// Whether supports color fonts
   has_color : Bool
-  /// 是否支持可变字体
+  /// Whether supports variable fonts
   has_variable : Bool
-  /// 是否有OpenType特性
+  /// Whether has OpenType features
   has_opentype_features : Bool
-  /// 表的数量
+  /// Number of tables
   table_count : Int
-  /// 支持的表类型
+  /// Supported table types
   supported_tables : Array[String]
 } derive(Show)
 
-// ==================== 构造函数 ====================
+// ==================== Constructors ====================
 
-/// 创建解析成功结果
+/// Create parse success result
 pub fn[T] make_success(value : T) -> ParseResult[T] {
   ParseResult::Success(value)
 }
 
-/// 创建解析错误结果  
+/// Create parse error result
 pub fn[T] make_error(msg : String) -> ParseResult[T] {
   ParseResult::Error(msg)
 }
 
-/// 创建字体头结构
+/// Create font header structure
 pub fn make_font_header(version : Int, num_tables : Int, search_range : Int, entry_selector : Int, range_shift : Int) -> FontHeader {
   FontHeader::{
     version: version,
@@ -156,7 +156,7 @@ pub fn make_font_header(version : Int, num_tables : Int, search_range : Int, ent
   }
 }
 
-/// 创建表目录项
+/// Create table directory entry
 pub fn make_table_entry(tag : String, checksum : Int, offset : Int, length : Int) -> TableDirectoryEntry {
   TableDirectoryEntry::{
     tag: tag,
@@ -166,7 +166,7 @@ pub fn make_table_entry(tag : String, checksum : Int, offset : Int, length : Int
   }
 }
 
-/// 创建表目录
+/// Create table directory
 pub fn make_table_directory(header : FontHeader, entries : Array[TableDirectoryEntry]) -> TableDirectory {
   TableDirectory::{
     header: header,
@@ -174,7 +174,7 @@ pub fn make_table_directory(header : FontHeader, entries : Array[TableDirectoryE
   }
 }
 
-/// 创建 head 表
+/// Create head table
 pub fn make_head_table(version : Int, font_revision : Int, checksum_adjustment : Int, magic_number : Int,
                        flags : Int, units_per_em : Int, created : Int, modified : Int,
                        x_min : Int, y_min : Int, x_max : Int, y_max : Int,
@@ -201,7 +201,7 @@ pub fn make_head_table(version : Int, font_revision : Int, checksum_adjustment :
   }
 }
 
-/// 创建 maxp 表
+/// Create maxp table
 pub fn make_maxp_table(version : Int, num_glyphs : Int, max_points : Int, max_contours : Int,
                        max_composite_points : Int, max_composite_contours : Int) -> MaxpTable {
   MaxpTable::{
@@ -214,7 +214,7 @@ pub fn make_maxp_table(version : Int, num_glyphs : Int, max_points : Int, max_co
   }
 }
 
-/// 创建字体特性分析结果
+/// Create font feature analysis result
 pub fn make_font_features(has_color : Bool, has_variable : Bool, has_opentype_features : Bool, 
                           table_count : Int, supported_tables : Array[String]) -> FontFeatures {
   FontFeatures::{
@@ -226,7 +226,7 @@ pub fn make_font_features(has_color : Bool, has_variable : Bool, has_opentype_fe
   }
 }
 
-/// 创建字体信息
+/// Create font information
 pub fn make_font_info(name : String, family : String, style : String, version : String,
                       num_glyphs : Int, units_per_em : Int, ascender : Int, descender : Int, line_gap : Int) -> FontInfo {
   FontInfo::{

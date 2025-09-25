@@ -1,9 +1,9 @@
-/// TTF 字体解析器 - 表解析模块
-/// 负责解析各种TTF表结构
+/// TTF Font Parser - Table Parsing Module
+/// Responsible for parsing various TTF table structures
 
-// ==================== 表解析模块 ====================
+// ==================== Table Parsing Module ====================
 
-/// 查找指定的表
+/// Find specified table
 pub fn find_table(tables : @types.TableDirectory, tag : String) -> Option[@types.TableDirectoryEntry] {
   for i = 0; i < tables.entries.length(); i = i + 1 {
     if tables.entries[i].tag == tag {
@@ -13,12 +13,12 @@ pub fn find_table(tables : @types.TableDirectory, tag : String) -> Option[@types
   None
 }
 
-/// 解析字体文件头
+/// Parse font file header
 pub fn[R : @reader.ByteReader] parse_font_header(reader : R) -> @types.ParseResult[@types.FontHeader] {
   reader.seek(0)
   
   if reader.length() < 12 {
-    @types.make_error("文件太小，无法包含有效的字体头")
+    @types.make_error("File too small to contain valid font header")
   } else {
     match (
       @reader.read_u32_be(reader),
@@ -30,12 +30,12 @@ pub fn[R : @reader.ByteReader] parse_font_header(reader : R) -> @types.ParseResu
       (Some(version), Some(num_tables), Some(search_range), Some(entry_selector), Some(range_shift)) => {
         @types.make_success(@types.make_font_header(version, num_tables, search_range, entry_selector, range_shift))
       }
-      _ => @types.make_error("无法读取字体头数据")
+      _ => @types.make_error("Unable to read font header data")
     }
   }
 }
 
-/// 解析单个表目录项
+/// Parse single table directory entry
 fn[R : @reader.ByteReader] parse_table_entry(reader : R) -> @types.ParseResult[@types.TableDirectoryEntry] {
   match (
     @reader.read_tag(reader),
@@ -46,26 +46,26 @@ fn[R : @reader.ByteReader] parse_table_entry(reader : R) -> @types.ParseResult[@
     (Some(tag), Some(checksum), Some(offset), Some(length)) => {
       @types.make_success(@types.make_table_entry(tag, checksum, offset, length))
     }
-    _ => @types.make_error("无法读取表目录项数据")
+    _ => @types.make_error("Unable to read table directory entry data")
   }
 }
 
-/// 解析表目录
+/// Parse table directory
 pub fn[R : @reader.ByteReader] parse_table_directory(reader : R) -> @types.ParseResult[@types.TableDirectory] {
   match parse_font_header(reader) {
     @types.Success(header) => {
-      reader.seek(12)  // 跳过文件头
+      reader.seek(12)  // Skip file header
       
       let mut entries = []
       
-      // 解析所有表目录项
+      // Parse all table directory entries
       for i = 0; i < header.num_tables; i = i + 1 {
         match parse_table_entry(reader) {
           @types.Success(entry) => {
             entries = entries + [entry]
           }
           @types.Error(_) => {
-            // 如果某个表解析失败，继续解析其他表
+            // If a table parsing fails, continue parsing other tables
             ()
           }
         }
@@ -77,7 +77,7 @@ pub fn[R : @reader.ByteReader] parse_table_directory(reader : R) -> @types.Parse
   }
 }
 
-/// 解析 head 表
+/// Parse head table
 pub fn[R : @reader.ByteReader] parse_head_table(reader : R, table : @types.TableDirectoryEntry) -> @types.ParseResult[@types.HeadTable] {
   reader.seek(table.offset)
   
@@ -117,11 +117,11 @@ pub fn[R : @reader.ByteReader] parse_head_table(reader : R, table : @types.Table
         index_to_loc_format, glyph_data_format
       ))
     }
-    _ => @types.make_error("无法读取 head 表数据")
+    _ => @types.make_error("Unable to read head table data")
   }
 }
 
-/// 解析 maxp 表
+/// Parse maxp table
 pub fn[R : @reader.ByteReader] parse_maxp_table(reader : R, table : @types.TableDirectoryEntry) -> @types.ParseResult[@types.MaxpTable] {
   reader.seek(table.offset)
   
@@ -130,7 +130,7 @@ pub fn[R : @reader.ByteReader] parse_maxp_table(reader : R, table : @types.Table
     @reader.read_u16_be(reader)   // num_glyphs
   ) {
     (Some(version), Some(num_glyphs)) => {
-      // 读取更多信息（只在版本 1.0 中存在）
+      // Read more information (only exists in version 1.0)
       if version == 0x00010000 {
         match (
           @reader.read_u16_be(reader),  // max_points
@@ -147,6 +147,6 @@ pub fn[R : @reader.ByteReader] parse_maxp_table(reader : R, table : @types.Table
         @types.make_success(@types.make_maxp_table(version, num_glyphs, 0, 0, 0, 0))
       }
     }
-    _ => @types.make_error("无法读取 maxp 表数据")
+    _ => @types.make_error("Unable to read maxp table data")
   }
 }

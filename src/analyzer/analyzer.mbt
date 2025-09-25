@@ -1,51 +1,51 @@
-/// TTF 字体解析器 - 字体分析模块
-/// 负责分析字体特性和功能
+/// TTF Font Parser - Font Analysis Module
+/// Responsible for analyzing font features and functionality
 
-// ==================== 字体分析模块 ====================
+// ==================== Font Analysis Module ====================
 
-/// 判断表标签是否为核心表
+/// Check if table tag is a core table
 fn is_core_table(tag : String) -> Bool {
   tag == "cmap" || tag == "glyf" || tag == "head" || tag == "maxp" || tag == "name"
 }
 
-/// 公开的核心表检查函数
+/// Public core table check function
 pub fn is_core_table_check(tag : String) -> Bool {
   is_core_table(tag)
 }
 
-/// 判断表标签是否为彩色字体相关
+/// Check if table tag is color font related
 fn is_color_table(tag : String) -> Bool {
   tag == "COLR" || tag == "CPAL" || tag == "CBDT" || tag == "CBLC"
 }
 
-/// 判断表标签是否为可变字体相关
+/// Check if table tag is variable font related
 fn is_variable_table(tag : String) -> Bool {
   tag == "fvar" || tag == "gvar" || tag == "HVAR" || tag == "MVAR" || tag == "STAT" || tag == "avar"
 }
 
-/// 分析字体特性
+/// Analyze font features
 pub fn analyze_font_features(tables : @types.TableDirectory) -> @types.FontFeatures {
   let mut has_color = false
   let mut has_variable = false
   let mut has_opentype_features = false
   let mut supported_tables = []
   
-  // 分析每个表
+  // Analyze each table
   for i = 0; i < tables.entries.length(); i = i + 1 {
     let tag = tables.entries[i].tag
     supported_tables = supported_tables + [tag]
     
-    // 检查彩色字体支持
+    // Check color font support
     if is_color_table(tag) {
       has_color = true
     }
     
-    // 检查可变字体支持
+    // Check variable font support
     if is_variable_table(tag) {
       has_variable = true
     }
     
-    // 检查OpenType特性
+    // Check OpenType features
     if tag == "GSUB" || tag == "GPOS" || tag == "GDEF" {
       has_opentype_features = true
     }
@@ -54,9 +54,9 @@ pub fn analyze_font_features(tables : @types.TableDirectory) -> @types.FontFeatu
   @types.make_font_features(has_color, has_variable, has_opentype_features, tables.entries.length(), supported_tables)
 }
 
-/// 从表目录中提取完整的字体信息
+/// Extract complete font information from table directory
 pub fn[R : @reader.ByteReader] extract_font_info(reader : R, tables : @types.TableDirectory) -> @types.ParseResult[@types.FontInfo] {
-  // 默认值
+  // Default values
   let mut name = "Unknown Font"
   let mut family = "Unknown Family"
   let mut style = "Regular"
@@ -67,30 +67,30 @@ pub fn[R : @reader.ByteReader] extract_font_info(reader : R, tables : @types.Tab
   let descender = 0
   let line_gap = 0
   
-  // 解析 head 表
+  // Parse head table
   match @parser.find_table(tables, "head") {
     Some(head_table) => {
       match @parser.parse_head_table(reader, head_table) {
         @types.Success(head) => {
           units_per_em = head.units_per_em
-          // 检查魔术数字
+          // Check magic number
           if head.magic_number != 0x5F0F3CF5 {
-            return @types.make_error("非法的 TTF 文件：魔术数字不匹配")
+            return @types.make_error("Invalid TTF file: magic number mismatch")
           }
         }
         @types.Error(_) => {
-          // 如果 head 表解析失败，使用默认值
+          // If head table parsing fails, use default values
           ()
         }
       }
     }
     None => {
-      // 没有 head 表，使用默认值
+      // No head table, use default values
       ()
     }
   }
   
-  // 解析 maxp 表
+  // Parse maxp table
   match @parser.find_table(tables, "maxp") {
     Some(maxp_table) => {
       match @parser.parse_maxp_table(reader, maxp_table) {
@@ -98,18 +98,18 @@ pub fn[R : @reader.ByteReader] extract_font_info(reader : R, tables : @types.Tab
           num_glyphs = maxp.num_glyphs
         }
         @types.Error(_) => {
-          // 如果 maxp 表解析失败，使用默认值
+          // If maxp table parsing fails, use default values
           ()
         }
       }
     }
     None => {
-      // 没有 maxp 表，使用默认值
+      // No maxp table, use default values
       ()
     }
   }
   
-  // 基于表特征设置字体信息
+  // Set font information based on table features
   let features = analyze_font_features(tables)
   
   if features.has_color {
@@ -127,7 +127,7 @@ pub fn[R : @reader.ByteReader] extract_font_info(reader : R, tables : @types.Tab
     family = "Standard Font"
   }
   
-  // 基于表数量估算版本
+  // Estimate version based on table count
   if features.table_count > 15 {
     version = "2.0"
   } else if features.table_count > 10 {
