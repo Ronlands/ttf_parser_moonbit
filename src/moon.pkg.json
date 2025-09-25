@@ -1,6 +1,3 @@
 {
-  "import": [
-    // "ronlands/ttf_parser_moonbit/parser",
-    // "ronlands/ttf_parser_moonbit/cmd"
-  ]
+  "import": []
 }

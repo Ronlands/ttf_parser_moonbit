@@ -1,23 +1,23 @@
 {
   "import": [
     {
-      "path": "ronlands/ttf_parser_moonbit/type",
+      "path": "Ronlands/ttf_parser_moonbit/type",
       "alias": "types"
     },
     {
-      "path": "ronlands/ttf_parser_moonbit/reader",
+      "path": "Ronlands/ttf_parser_moonbit/reader",
       "alias": "reader"
     },
     {
-      "path": "ronlands/ttf_parser_moonbit/parser",
+      "path": "Ronlands/ttf_parser_moonbit/parser",
       "alias": "parser"
     },
     {
-      "path": "ronlands/ttf_parser_moonbit/analyzer",
+      "path": "Ronlands/ttf_parser_moonbit/analyzer",
       "alias": "analyzer"
     },
     {
-      "path": "ronlands/ttf_parser_moonbit/test_data",
+      "path": "Ronlands/ttf_parser_moonbit/test_data",
       "alias": "test_data"
     }
   ],

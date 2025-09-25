@@ -1,11 +1,11 @@
 {
   "import": [
     {
-      "path": "ronlands/ttf_parser_moonbit/type",
+      "path": "Ronlands/ttf_parser_moonbit/type",
       "alias": "types"
     },
     {
-      "path": "ronlands/ttf_parser_moonbit/reader", 
+      "path": "Ronlands/ttf_parser_moonbit/reader", 
       "alias": "reader"
     }
   ]
