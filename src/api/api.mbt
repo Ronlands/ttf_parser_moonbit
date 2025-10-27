@@ -56,10 +56,87 @@ pub fn is_variable_font(data : Array[Int]) -> Bool {
   }
 }
 
-/// Check if font file is valid
+/// Enhanced font file validation
+pub fn validate_ttf_structure(data : Array[Int]) -> @types.ParseResult[String] {
+  // Check minimum file size
+  if data.length() < 12 {
+    return @types.make_error("File too small (" + data.length().to_string() + " bytes), not a valid TTF file")
+  }
+  
+  // Check file signature
+  let reader = @reader.ArrayByteReader::new(data)
+  match @reader.read_u32_be(reader) {
+    Some(0x00010000) => () // TrueType
+    Some(0x4F54544F) => () // OpenType with CFF data ('OTTO')
+    Some(0x74727565) => () // TrueType ('true')
+    Some(version) => {
+      return @types.make_error("Unsupported font format, version: 0x" + version.to_string())
+    }
+    None => {
+      return @types.make_error("Unable to read file header")
+    }
+  }
+  
+  // Validate table directory
+  match get_table_directory(data) {
+    @types.Success(tables) => {
+      // Check for required tables
+      let required_tables = ["head", "maxp"]
+      let mut missing_tables = []
+      
+      for required_table in required_tables {
+        let mut found = false
+        for i = 0; i < tables.entries.length(); i = i + 1 {
+          if tables.entries[i].tag == required_table {
+            found = true
+            break
+          }
+        }
+        if !found {
+          missing_tables = missing_tables + [required_table]
+        }
+      }
+      
+      if missing_tables.length() > 0 {
+        let mut missing_str = ""
+        for i = 0; i < missing_tables.length(); i = i + 1 {
+          if i > 0 { missing_str = missing_str + ", " }
+          missing_str = missing_str + missing_tables[i]
+        }
+        return @types.make_error("Missing required tables: " + missing_str)
+      }
+      
+      // Validate head table magic number
+      match @parser.find_table(tables, "head") {
+        Some(head_table_entry) => {
+          match @parser.parse_head_table(reader, head_table_entry) {
+            @types.Success(head) => {
+              if head.magic_number != 0x5F0F3CF5 {
+                return @types.make_error("Incorrect head table magic number: 0x" + head.magic_number.to_string())
+              }
+            }
+            @types.Error(msg) => {
+              return @types.make_error("Head table parsing failed: " + msg)
+            }
+          }
+        }
+        None => {
+          return @types.make_error("Head table not found")
+        }
+      }
+      
+      @types.make_success("Font file validation passed, contains " + tables.entries.length().to_string() + " tables")
+    }
+    @types.Error(msg) => {
+      @types.make_error("Table directory parsing failed: " + msg)
+    }
+  }
+}
+
+/// Check if font file is valid (simple version)
 pub fn is_valid_ttf(data : Array[Int]) -> Bool {
-  match get_font_header(data) {
-    @types.Success(header) => header.version == 0x00010000
+  match validate_ttf_structure(data) {
+    @types.Success(_) => true
     @types.Error(_) => false
   }
 }

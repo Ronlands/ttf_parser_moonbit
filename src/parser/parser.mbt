@@ -150,3 +150,134 @@ pub fn[R : @reader.ByteReader] parse_maxp_table(reader : R, table : @types.Table
     _ => @types.make_error("Unable to read maxp table data")
   }
 }
+
+/// Parse hhea table for font metrics
+pub fn[R : @reader.ByteReader] parse_hhea_table(reader : R, table : @types.TableDirectoryEntry) -> @types.ParseResult[@types.HheaTable] {
+  reader.seek(table.offset)
+  
+  match (
+    @reader.read_u32_be(reader),  // version
+    @reader.read_u16_be(reader),  // ascender (signed)
+    @reader.read_u16_be(reader),  // descender (signed)
+    @reader.read_u16_be(reader),  // line_gap (signed)
+    @reader.read_u16_be(reader),  // advance_width_max
+    @reader.read_u16_be(reader),  // min_left_side_bearing (signed)
+    @reader.read_u16_be(reader),  // min_right_side_bearing (signed)
+    @reader.read_u16_be(reader),  // x_max_extent (signed)
+    @reader.read_u16_be(reader),  // caret_slope_rise (signed)
+    @reader.read_u16_be(reader),  // caret_slope_run (signed)
+    @reader.read_u16_be(reader),  // caret_offset (signed)
+    @reader.read_u16_be(reader),  // reserved1
+    @reader.read_u16_be(reader),  // reserved2
+    @reader.read_u16_be(reader),  // reserved3
+    @reader.read_u16_be(reader),  // reserved4
+    @reader.read_u16_be(reader),  // metric_data_format
+    @reader.read_u16_be(reader)   // number_of_h_metrics
+  ) {
+    (
+      Some(version), Some(ascender), Some(descender), Some(line_gap),
+      Some(advance_width_max), Some(min_left_side_bearing), Some(min_right_side_bearing), Some(x_max_extent),
+      Some(caret_slope_rise), Some(caret_slope_run), Some(caret_offset),
+      Some(_), Some(_), Some(_), Some(_),  // reserved fields
+      Some(metric_data_format), Some(number_of_h_metrics)
+    ) => {
+      // Convert unsigned to signed for metrics that can be negative
+      let signed_ascender = if ascender > 32767 { ascender - 65536 } else { ascender }
+      let signed_descender = if descender > 32767 { descender - 65536 } else { descender }
+      let signed_line_gap = if line_gap > 32767 { line_gap - 65536 } else { line_gap }
+      let signed_min_lsb = if min_left_side_bearing > 32767 { min_left_side_bearing - 65536 } else { min_left_side_bearing }
+      let signed_min_rsb = if min_right_side_bearing > 32767 { min_right_side_bearing - 65536 } else { min_right_side_bearing }
+      let signed_x_max_extent = if x_max_extent > 32767 { x_max_extent - 65536 } else { x_max_extent }
+      let signed_caret_slope_rise = if caret_slope_rise > 32767 { caret_slope_rise - 65536 } else { caret_slope_rise }
+      let signed_caret_slope_run = if caret_slope_run > 32767 { caret_slope_run - 65536 } else { caret_slope_run }
+      let signed_caret_offset = if caret_offset > 32767 { caret_offset - 65536 } else { caret_offset }
+      
+      @types.make_success(@types.make_hhea_table(
+        version, signed_ascender, signed_descender, signed_line_gap,
+        advance_width_max, signed_min_lsb, signed_min_rsb, signed_x_max_extent,
+        signed_caret_slope_rise, signed_caret_slope_run, signed_caret_offset,
+        metric_data_format, number_of_h_metrics
+      ))
+    }
+    _ => @types.make_error("Unable to read hhea table data")
+  }
+}
+
+/// Parse name table for font names
+pub fn[R : @reader.ByteReader] parse_name_table(reader : R, table : @types.TableDirectoryEntry) -> @types.ParseResult[@types.NameTable] {
+  reader.seek(table.offset)
+  
+  match (
+    @reader.read_u16_be(reader),  // format
+    @reader.read_u16_be(reader),  // count
+    @reader.read_u16_be(reader)   // string_offset
+  ) {
+    (Some(format), Some(count), Some(string_offset)) => {
+      let mut records = []
+      
+      // Parse name records
+      for i = 0; i < count; i = i + 1 {
+        match (
+          @reader.read_u16_be(reader),  // platform_id
+          @reader.read_u16_be(reader),  // encoding_id
+          @reader.read_u16_be(reader),  // language_id
+          @reader.read_u16_be(reader),  // name_id
+          @reader.read_u16_be(reader),  // length
+          @reader.read_u16_be(reader)   // offset
+        ) {
+          (Some(platform_id), Some(encoding_id), Some(language_id), Some(name_id), Some(length), Some(offset)) => {
+            // For now, create record with empty string - we'll read the actual string later
+            let record = @types.make_name_record(platform_id, encoding_id, language_id, name_id, length, offset, "")
+            records = records + [record]
+          }
+          _ => {
+            // Skip invalid record
+            ()
+          }
+        }
+      }
+      
+      // Read actual string values for important name IDs
+      let mut final_records = []
+      for i = 0; i < records.length(); i = i + 1 {
+        let record = records[i]
+        let mut string_value = ""
+        
+        // Only read strings for common name IDs to avoid complexity
+        if record.name_id == 1 || record.name_id == 2 || record.name_id == 4 || record.name_id == 6 {
+          // Seek to string position
+          let string_pos = table.offset + string_offset + record.offset
+          if string_pos + record.length <= reader.length() {
+            reader.seek(string_pos)
+            
+            // Read string bytes (simplified - assume ASCII for now)
+            let mut bytes = []
+            for j = 0; j < record.length; j = j + 1 {
+              match reader.read_byte() {
+                Some(byte) => bytes = bytes + [byte]
+                None => break
+              }
+            }
+            
+            // Convert bytes to string (simplified ASCII conversion)
+            for k = 0; k < bytes.length(); k = k + 1 {
+              let byte = bytes[k]
+              if byte >= 32 && byte <= 126 {
+                string_value = string_value + Int::unsafe_to_char(byte).to_string()
+              }
+            }
+          }
+        }
+        
+        let final_record = @types.make_name_record(
+          record.platform_id, record.encoding_id, record.language_id, 
+          record.name_id, record.length, record.offset, string_value
+        )
+        final_records = final_records + [final_record]
+      }
+      
+      @types.make_success(@types.make_name_table(format, count, string_offset, final_records))
+    }
+    _ => @types.make_error("Unable to read name table data")
+  }
+}

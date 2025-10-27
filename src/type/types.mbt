@@ -119,6 +119,66 @@ pub struct FontInfo {
   line_gap : Int
 } derive(Show)
 
+/// hhea table structure
+pub struct HheaTable {
+  /// Table version
+  version : Int
+  /// Ascender height
+  ascender : Int
+  /// Descender height (negative value)
+  descender : Int
+  /// Line gap
+  line_gap : Int
+  /// Advance width max
+  advance_width_max : Int
+  /// Minimum left side bearing
+  min_left_side_bearing : Int
+  /// Minimum right side bearing
+  min_right_side_bearing : Int
+  /// X max extent
+  x_max_extent : Int
+  /// Caret slope rise
+  caret_slope_rise : Int
+  /// Caret slope run
+  caret_slope_run : Int
+  /// Caret offset
+  caret_offset : Int
+  /// Metric data format
+  metric_data_format : Int
+  /// Number of horizontal metrics
+  number_of_h_metrics : Int
+} derive(Show)
+
+/// Name record structure
+pub struct NameRecord {
+  /// Platform ID
+  platform_id : Int
+  /// Encoding ID
+  encoding_id : Int
+  /// Language ID
+  language_id : Int
+  /// Name ID
+  name_id : Int
+  /// String length
+  length : Int
+  /// String offset
+  offset : Int
+  /// Actual string value
+  value : String
+} derive(Show)
+
+/// name table structure
+pub struct NameTable {
+  /// Format selector
+  format : Int
+  /// Number of name records
+  count : Int
+  /// String storage offset
+  string_offset : Int
+  /// Name records
+  records : Array[NameRecord]
+} derive(Show)
+
 /// Font feature analysis
 pub struct FontFeatures {
   /// Whether supports color fonts
@@ -223,6 +283,52 @@ pub fn make_font_features(has_color : Bool, has_variable : Bool, has_opentype_fe
     has_opentype_features: has_opentype_features,
     table_count: table_count,
     supported_tables: supported_tables
+  }
+}
+
+/// Create hhea table
+pub fn make_hhea_table(version : Int, ascender : Int, descender : Int, line_gap : Int,
+                       advance_width_max : Int, min_left_side_bearing : Int, min_right_side_bearing : Int,
+                       x_max_extent : Int, caret_slope_rise : Int, caret_slope_run : Int, caret_offset : Int,
+                       metric_data_format : Int, number_of_h_metrics : Int) -> HheaTable {
+  HheaTable::{
+    version: version,
+    ascender: ascender,
+    descender: descender,
+    line_gap: line_gap,
+    advance_width_max: advance_width_max,
+    min_left_side_bearing: min_left_side_bearing,
+    min_right_side_bearing: min_right_side_bearing,
+    x_max_extent: x_max_extent,
+    caret_slope_rise: caret_slope_rise,
+    caret_slope_run: caret_slope_run,
+    caret_offset: caret_offset,
+    metric_data_format: metric_data_format,
+    number_of_h_metrics: number_of_h_metrics
+  }
+}
+
+/// Create name record
+pub fn make_name_record(platform_id : Int, encoding_id : Int, language_id : Int, name_id : Int,
+                        length : Int, offset : Int, value : String) -> NameRecord {
+  NameRecord::{
+    platform_id: platform_id,
+    encoding_id: encoding_id,
+    language_id: language_id,
+    name_id: name_id,
+    length: length,
+    offset: offset,
+    value: value
+  }
+}
+
+/// Create name table
+pub fn make_name_table(format : Int, count : Int, string_offset : Int, records : Array[NameRecord]) -> NameTable {
+  NameTable::{
+    format: format,
+    count: count,
+    string_offset: string_offset,
+    records: records
   }
 }
 
