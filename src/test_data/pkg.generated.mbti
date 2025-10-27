@@ -1,5 +1,5 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "ronlands/ttf_parser_moonbit/test_data"
+package "Ronlands/ttf_parser_moonbit/test_data"
 
 // Values
 let colr1_ttf_data : Array[Int]

@@ -1,9 +1,9 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "ronlands/ttf_parser_moonbit/analyzer"
+package "Ronlands/ttf_parser_moonbit/analyzer"
 
 import(
-  "ronlands/ttf_parser_moonbit/reader"
-  "ronlands/ttf_parser_moonbit/type"
+  "Ronlands/ttf_parser_moonbit/reader"
+  "Ronlands/ttf_parser_moonbit/type"
 )
 
 // Values

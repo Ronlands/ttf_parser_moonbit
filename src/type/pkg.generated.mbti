@@ -1,5 +1,5 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "ronlands/ttf_parser_moonbit/type"
+package "Ronlands/ttf_parser_moonbit/type"
 
 // Values
 fn[T] make_error(String) -> ParseResult[T]
@@ -12,7 +12,13 @@ fn make_font_info(String, String, String, String, Int, Int, Int, Int, Int) -> Fo
 
 fn make_head_table(Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int) -> HeadTable
 
+fn make_hhea_table(Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int) -> HheaTable
+
 fn make_maxp_table(Int, Int, Int, Int, Int, Int) -> MaxpTable
+
+fn make_name_record(Int, Int, Int, Int, Int, Int, String) -> NameRecord
+
+fn make_name_table(Int, Int, Int, Array[NameRecord]) -> NameTable
 
 fn[T] make_success(T) -> ParseResult[T]
 
@@ -30,6 +36,8 @@ pub struct FontFeatures {
   table_count : Int
   supported_tables : Array[String]
 }
+fn FontFeatures::output(Self, &Logger) -> Unit // from trait `Show`
+fn FontFeatures::to_string(Self) -> String // from trait `Show`
 impl Show for FontFeatures
 
 pub struct FontHeader {
@@ -39,6 +47,8 @@ pub struct FontHeader {
   entry_selector : Int
   range_shift : Int
 }
+fn FontHeader::output(Self, &Logger) -> Unit // from trait `Show`
+fn FontHeader::to_string(Self) -> String // from trait `Show`
 impl Show for FontHeader
 
 pub struct FontInfo {
@@ -52,6 +62,8 @@ pub struct FontInfo {
   descender : Int
   line_gap : Int
 }
+fn FontInfo::output(Self, &Logger) -> Unit // from trait `Show`
+fn FontInfo::to_string(Self) -> String // from trait `Show`
 impl Show for FontInfo
 
 pub struct HeadTable {
@@ -73,7 +85,28 @@ pub struct HeadTable {
   index_to_loc_format : Int
   glyph_data_format : Int
 }
+fn HeadTable::output(Self, &Logger) -> Unit // from trait `Show`
+fn HeadTable::to_string(Self) -> String // from trait `Show`
 impl Show for HeadTable
+
+pub struct HheaTable {
+  version : Int
+  ascender : Int
+  descender : Int
+  line_gap : Int
+  advance_width_max : Int
+  min_left_side_bearing : Int
+  min_right_side_bearing : Int
+  x_max_extent : Int
+  caret_slope_rise : Int
+  caret_slope_run : Int
+  caret_offset : Int
+  metric_data_format : Int
+  number_of_h_metrics : Int
+}
+fn HheaTable::output(Self, &Logger) -> Unit // from trait `Show`
+fn HheaTable::to_string(Self) -> String // from trait `Show`
+impl Show for HheaTable
 
 pub struct MaxpTable {
   version : Int
@@ -83,18 +116,47 @@ pub struct MaxpTable {
   max_composite_points : Int
   max_composite_contours : Int
 }
+fn MaxpTable::output(Self, &Logger) -> Unit // from trait `Show`
+fn MaxpTable::to_string(Self) -> String // from trait `Show`
 impl Show for MaxpTable
+
+pub struct NameRecord {
+  platform_id : Int
+  encoding_id : Int
+  language_id : Int
+  name_id : Int
+  length : Int
+  offset : Int
+  value : String
+}
+fn NameRecord::output(Self, &Logger) -> Unit // from trait `Show`
+fn NameRecord::to_string(Self) -> String // from trait `Show`
+impl Show for NameRecord
+
+pub struct NameTable {
+  format : Int
+  count : Int
+  string_offset : Int
+  records : Array[NameRecord]
+}
+fn NameTable::output(Self, &Logger) -> Unit // from trait `Show`
+fn NameTable::to_string(Self) -> String // from trait `Show`
+impl Show for NameTable
 
 pub enum ParseResult[T] {
   Success(T)
   Error(String)
 }
+fn[T : Show] ParseResult::output(Self[T], &Logger) -> Unit // from trait `Show`
+fn[T : Show] ParseResult::to_string(Self[T]) -> String // from trait `Show`
 impl[T : Show] Show for ParseResult[T]
 
 pub struct TableDirectory {
   header : FontHeader
   entries : Array[TableDirectoryEntry]
 }
+fn TableDirectory::output(Self, &Logger) -> Unit // from trait `Show`
+fn TableDirectory::to_string(Self) -> String // from trait `Show`
 impl Show for TableDirectory
 
 pub struct TableDirectoryEntry {
@@ -103,6 +165,8 @@ pub struct TableDirectoryEntry {
   offset : Int
   length : Int
 }
+fn TableDirectoryEntry::output(Self, &Logger) -> Unit // from trait `Show`
+fn TableDirectoryEntry::to_string(Self) -> String // from trait `Show`
 impl Show for TableDirectoryEntry
 
 // Type aliases

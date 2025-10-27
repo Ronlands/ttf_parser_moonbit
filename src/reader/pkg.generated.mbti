@@ -1,5 +1,5 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "ronlands/ttf_parser_moonbit/reader"
+package "Ronlands/ttf_parser_moonbit/reader"
 
 // Values
 fn bytes_to_tag_string(Int, Int, Int, Int) -> String
@@ -17,9 +17,15 @@ pub struct ArrayByteReader {
   data : Array[Int]
   mut pos : Int
 }
+fn ArrayByteReader::length(Self) -> Int // from trait `ByteReader`
 fn ArrayByteReader::new(Array[Int]) -> Self
-impl Show for ArrayByteReader
+fn ArrayByteReader::output(Self, &Logger) -> Unit // from trait `Show`
+fn ArrayByteReader::position(Self) -> Int // from trait `ByteReader`
+fn ArrayByteReader::read_byte(Self) -> Int? // from trait `ByteReader`
+fn ArrayByteReader::seek(Self, Int) -> Unit // from trait `ByteReader`
+fn ArrayByteReader::to_string(Self) -> String // from trait `Show`
 impl ByteReader for ArrayByteReader
+impl Show for ArrayByteReader
 
 // Type aliases
 

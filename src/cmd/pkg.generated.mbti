@@ -1,11 +1,15 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "ronlands/ttf_parser_moonbit/cmd"
+package "Ronlands/ttf_parser_moonbit/cmd"
 
 // Values
 
 // Errors
 
 // Types and methods
+type FontAnalysisStats
+fn FontAnalysisStats::output(Self, &Logger) -> Unit // from trait `Show`
+fn FontAnalysisStats::to_string(Self) -> String // from trait `Show`
+impl Show for FontAnalysisStats
 
 // Type aliases
 

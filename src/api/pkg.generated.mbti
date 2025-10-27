@@ -1,8 +1,8 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "ronlands/ttf_parser_moonbit/api"
+package "Ronlands/ttf_parser_moonbit/api"
 
 import(
-  "ronlands/ttf_parser_moonbit/type"
+  "Ronlands/ttf_parser_moonbit/type"
 )
 
 // Values
@@ -29,6 +29,8 @@ fn is_valid_ttf(Array[Int]) -> Bool
 fn is_variable_font(Array[Int]) -> Bool
 
 fn parse_ttf_from_bytes(Array[Int]) -> @type.ParseResult[@type.FontInfo]
+
+fn validate_ttf_structure(Array[Int]) -> @type.ParseResult[String]
 
 // Errors
 

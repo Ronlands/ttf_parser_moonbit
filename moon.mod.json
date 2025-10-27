@@ -1,13 +1,13 @@
 {
   "name": "Ronlands/ttf_parser_moonbit",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "deps": {
     "moonbitlang/x": "0.4.34"
   },
   "readme": "README.md",
-  "repository": "https://github.com/your-username/ttf_parser_moonbit",
+  "repository": "https://github.com/Ronlands/ttf_parser_moonbit",
   "license": "Apache-2.0",
-  "keywords": ["ttf", "font", "parser", "moonbit", "typography"],
-  "description": "A TrueType font file parser written in MoonBit language that supports parsing TTF file structures and key data",
+  "keywords": ["ttf", "font", "parser", "moonbit", "typography", "truetype", "opentype"],
+  "description": "High-performance TrueType font parser with modular architecture, supporting TTF/OTF/Variable/Color fonts",
   "source": "src"
 }

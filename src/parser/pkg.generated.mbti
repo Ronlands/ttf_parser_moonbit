@@ -1,9 +1,9 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "ronlands/ttf_parser_moonbit/parser"
+package "Ronlands/ttf_parser_moonbit/parser"
 
 import(
-  "ronlands/ttf_parser_moonbit/reader"
-  "ronlands/ttf_parser_moonbit/type"
+  "Ronlands/ttf_parser_moonbit/reader"
+  "Ronlands/ttf_parser_moonbit/type"
 )
 
 // Values
@@ -13,7 +13,11 @@ fn[R : @reader.ByteReader] parse_font_header(R) -> @type.ParseResult[@type.FontH
 
 fn[R : @reader.ByteReader] parse_head_table(R, @type.TableDirectoryEntry) -> @type.ParseResult[@type.HeadTable]
 
+fn[R : @reader.ByteReader] parse_hhea_table(R, @type.TableDirectoryEntry) -> @type.ParseResult[@type.HheaTable]
+
 fn[R : @reader.ByteReader] parse_maxp_table(R, @type.TableDirectoryEntry) -> @type.ParseResult[@type.MaxpTable]
+
+fn[R : @reader.ByteReader] parse_name_table(R, @type.TableDirectoryEntry) -> @type.ParseResult[@type.NameTable]
 
 fn[R : @reader.ByteReader] parse_table_directory(R) -> @type.ParseResult[@type.TableDirectory]
 
